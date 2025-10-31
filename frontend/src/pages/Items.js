@@ -13,7 +13,8 @@ function Items() {
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("")
   const limit = 5
-  console.log(items)
+
+  const totalPages = Math.ceil(total / limit);
 
   const loadItems = async(params = {}) => {
     try {
@@ -37,14 +38,19 @@ function Items() {
     loadItems({ limit, page: 1, q: searchQuery });
   };
 
-  const handleNext = () => setPage(prev => prev + 1);
-  const handlePrev = () => setPage(prev => Math.max(1, prev - 1));
+   const handleNext = () => {
+    if (page < totalPages) setPage(prev => prev + 1);
+  };
+
+  const handlePrev = () => {
+    if (page > 1) setPage(prev => prev - 1);
+  };
 
   if (!items.length) return <p>Loading...</p>;
 
   return (
     <>
-      <div style={{ marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', marginBottom: '1rem', gap: '0.5rem' }}>
         <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
         <button onClick={handleSearch}>Search</button>
       </div>
@@ -68,7 +74,7 @@ function Items() {
           Previous
         </Button>
         <span>Page {page}</span>
-        <Button variant="outlined" onClick={handleNext} disabled={total <= limit}>
+        <Button variant="outlined" onClick={handleNext} disabled={page >= totalPages}>
           Next
         </Button>
       </div>
